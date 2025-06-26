@@ -13,7 +13,6 @@ public class GitHubPayload {
     }
 
     public List<GitHubCommit> getCommits() {
-
         return gitHubCommits;
     }
 

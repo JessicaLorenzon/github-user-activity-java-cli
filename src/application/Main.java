@@ -1,17 +1,12 @@
 package application;
 
-import model.GitHubEvent;
-import service.GitHubService;
-import view.View;
+import controller.Controller;
 
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        View view = new View();
-        GitHubEvent[] gitHubEvents = GitHubService.buscaAtividade("JessicaLorenzon");
+        Controller controller = new Controller();
 
-        for (GitHubEvent gitHubEvent : gitHubEvents) {
-            view.exibirEvento(gitHubEvent);
-        }
+        controller.run(args);
     }
 }

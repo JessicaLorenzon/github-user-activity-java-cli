@@ -1,6 +1,7 @@
 package service;
 
 import com.google.gson.Gson;
+import exception.NotFoundException;
 import model.GitHubEvent;
 
 import java.io.BufferedReader;
@@ -12,40 +13,38 @@ import java.net.URL;
 public class GitHubService {
 
     static String webService = "https://api.github.com/users/";
-    static int codigoSucesso = 200;
+    static int codeSuccess = 200;
 
-    public static GitHubEvent[] buscaAtividade(String usuario) throws Exception {
-        String urlParaChamada = webService + usuario + "/events";
+    public static GitHubEvent[] searchActivity(String user) throws Exception {
+        String ApiUrl = webService + user + "/events";
 
-        try {
-            URL url = new URL(urlParaChamada);
-            HttpURLConnection conexao = (HttpURLConnection) url.openConnection();
+        URL url = new URL(ApiUrl);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            if (conexao.getResponseCode() != codigoSucesso) {
-                throw new RuntimeException("HTTP error code : " + conexao.getResponseCode());
-            }
-
-            try (BufferedReader resposta = new BufferedReader(new InputStreamReader(conexao.getInputStream()))) {
-                String jsonEmString = converteRespostaEmString(resposta);
-
-                Gson gson = new Gson();
-
-                return gson.fromJson(jsonEmString, GitHubEvent[].class);
-            }
-
-        } catch (Exception e) {
-            throw new Exception("Erro ao buscar atividade: " + e.getMessage(), e);
+        if (connection.getResponseCode() == 404) {
+            throw new NotFoundException();
         }
+        if (connection.getResponseCode() != 404 && connection.getResponseCode() != codeSuccess) {
+            throw new RuntimeException();
+        }
+
+        BufferedReader response = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+        String jsontoString = convertResponseToString(response);
+
+        Gson gson = new Gson();
+
+        return gson.fromJson(jsontoString, GitHubEvent[].class);
     }
 
-    public static String converteRespostaEmString(BufferedReader buffereReader) throws IOException {
-        StringBuilder jsonEmString = new StringBuilder();
+    public static String convertResponseToString(BufferedReader buffereReader) throws IOException {
+        StringBuilder jsontoString = new StringBuilder();
 
-        String resposta;
+        String response;
 
-        while ((resposta = buffereReader.readLine()) != null) {
-            jsonEmString.append(resposta);
+        while ((response = buffereReader.readLine()) != null) {
+            jsontoString.append(response);
         }
-        return jsonEmString.toString();
+        return jsontoString.toString();
     }
 }
