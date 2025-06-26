@@ -25,6 +25,7 @@ public class Controller {
             for (GitHubEvent gitHubEvent : gitHubEvents) {
                 processEvent(gitHubEvent);
             }
+
         } catch (NotFoundException e) {
             view.displayNotFoundExceptionError();
         } catch (Exception e) {
